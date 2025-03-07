@@ -1,14 +1,18 @@
 # Script de test pour l'environnement d'exécution
+# Il ne fait que sortir en stdout les paramètres qu'il reçoit
 
 import sys
-import time
 
 def main():
-    print("Ceci est un message en stdout.", flush=True)
-    time.sleep(1)
-    print("Ceci est un message d'erreur en stderr.", file=sys.stderr, flush=True)
-    time.sleep(1)
-    print("Fin du script.", flush=True)
+
+    # Vérifier s'il y a des arguments
+    if len(sys.argv) < 2:
+        print("Aucun paramètre fourni.")
+        return
+    
+    # Afficher chaque paramètre sur une ligne
+    for arg in sys.argv[1:]:  # Ignorer le premier élément (nom du script)
+        print(arg)
 
 if __name__ == "__main__":
     main()
