@@ -1,0 +1,5 @@
+# Exemple de fichier _config.ini
+[numeriseur]
+qidenus = /chemin/vers/dossiers/images/qidenus
+quartz = /chemin/vers/dossiers/images/quartz
+copibook = /chemin/vers/dossiers/images/copibook
