@@ -20,6 +20,7 @@ import tkinter as tk
 
 HANDLE_SIZE = 10  # Pour les coins du rectangle
 
+
 def get_cropped_output_path(input_path: str) -> str:
     """
     Prend un chemin d'image en entrée (ex: a/b/c/toto_Page_gauche.TIF)
@@ -117,7 +118,11 @@ class Cropper:
         elif "Page_droite" in filename:
             self.original_image = self.original_image.rotate(-90, expand=True)
         self.display_image = self.original_image.copy()
-        self.display_image.thumbnail((750, 750), Image.LANCZOS)
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
+        max_width = screen_width - 100
+        max_height = screen_height - 200
+        self.display_image.thumbnail((max_width, max_height), Image.LANCZOS)
 
         PADDING = 20
         self.tk_image = ImageTk.PhotoImage(self.display_image)
