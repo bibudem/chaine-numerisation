@@ -19,6 +19,28 @@ from PIL import Image, ImageTk
 import tkinter as tk
 
 HANDLE_SIZE = 10  # Pour les coins du rectangle
+CROP_FOLDER = "crop"    # Sous-dossier pour les images recadrées
+
+import os
+
+def is_already_cropped(filepath: str) -> bool:
+    """
+    Retourne True si une version 'croppée' du fichier existe dans le sous-dossier 'crop'.
+
+    Exemple : pour 'path/to/Test_Page_gauche.tif',
+    vérifie si 'path/to/crop/Test.tif' existe.
+    """
+    folder = os.path.dirname(filepath)
+    filename = os.path.basename(filepath)
+
+    # Retirer les suffixes "_Page_gauche" et "_Page_droite"
+    base_name = filename.replace("_Page_gauche", "").replace("_Page_droite", "")
+
+    # Construire le chemin du fichier croppé
+    crop_folder = os.path.join(folder, CROP_FOLDER)
+    cropped_path = os.path.join(crop_folder, base_name)
+
+    return os.path.exists(cropped_path)
 
 
 def get_cropped_output_path(input_path: str) -> str:
@@ -33,7 +55,7 @@ def get_cropped_output_path(input_path: str) -> str:
     folder = os.path.dirname(input_path)
     
     # Créer le chemin vers le sous-dossier "crop"
-    crop_folder = os.path.join(folder, "crop")
+    crop_folder = os.path.join(folder, CROP_FOLDER)
     os.makedirs(crop_folder, exist_ok=True)
 
     # Récupérer le nom de fichier sans les suffixes
@@ -137,6 +159,10 @@ class Cropper:
 
         self.redraw_crop_box()
         self.status_label.config(text=f"{self.index+1}/{len(self.tiff_files)} : {self.tiff_files[self.index]}")
+        if (is_already_cropped(filepath)):
+            self.status_label.config(fg="green")
+        else:
+            self.status_label.config(fg="black")
 
     def redraw_crop_box(self):
         self.canvas.delete("crop")
@@ -258,7 +284,6 @@ class Cropper:
         cropped = self.original_image.crop((x1, y1, x2, y2))
         filepath = os.path.join(self.folder, self.tiff_files[self.index])
         try:
-            print(get_cropped_output_path(filepath))
             cropped.save(get_cropped_output_path(filepath))
             self.status_label.config(text=f"✅ Enregistré : {get_cropped_output_path(filepath)}", fg="green")
             self.next_image()
