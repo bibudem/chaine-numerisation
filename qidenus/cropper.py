@@ -91,6 +91,22 @@ class Cropper:
         tk.Button(btn_frame, text="Enregistrer (S)", command=self.save_crop).pack(side="left")
         tk.Button(btn_frame, text="Image suivante (->)", command=self.next_image).pack(side="left")
 
+        # Slider
+        self.image_slider = tk.Scale(
+            btn_frame,
+            from_=1,
+            to=len(self.tiff_files),
+            orient="horizontal",
+            command=self.slider_moved,
+            length=300,  # ajustable
+            showvalue=False
+        )
+        self.image_slider.bind("<Button-1>", self.jump_slider_to_click)
+        self.image_slider.pack(side="left", padx=10)
+        # Label à droite pour afficher l'index paddé
+        self.slider_label = tk.Label(btn_frame, text="00001")
+        self.slider_label.pack(side="left", padx=5)
+
         # Barre d'état
         self.status_label = tk.Label(self.window, text="")
         self.status_label.pack()
@@ -107,6 +123,27 @@ class Cropper:
 
         self.load_image()
         self.window.mainloop()
+
+    def jump_slider_to_click(self, event):
+        # Calculer la valeur à partir de la position cliquée
+        widget = event.widget
+        slider_length = widget.winfo_width()
+        click_x = event.x
+
+        # Échelle allant de from_ à to_
+        val_range = widget.cget("to") - widget.cget("from")
+        new_val = int(widget.cget("from") + (click_x / slider_length) * val_range)
+
+        # Appliquer la nouvelle valeur
+        self.image_slider.set(new_val)
+        self.slider_moved(new_val)
+
+    def slider_moved(self, val):
+        idx = int(val) - 1
+        if 0 <= idx < len(self.tiff_files):
+            self.index = idx
+            self.load_image()
+            self.slider_label.config(text=f"{self.index + 1:05d}")
 
     def on_mouse_motion(self, event):
         x, y = event.x, event.y
@@ -294,11 +331,13 @@ class Cropper:
         if self.index < len(self.tiff_files) - 1:
             self.index += 1
             self.load_image()
+            self.image_slider.set(self.index+1)
 
     def previous_image(self):
         if self.index > 0:
             self.index -= 1
             self.load_image()
+            self.image_slider.set(self.index+1)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
