@@ -20,6 +20,8 @@ import tkinter as tk
 
 HANDLE_SIZE = 10  # Pour les coins du rectangle
 CROP_FOLDER = "crop"    # Sous-dossier pour les images recadrées
+PADDING = 20
+
 
 import os
 
@@ -183,7 +185,6 @@ class Cropper:
         max_height = screen_height - 200
         self.display_image.thumbnail((max_width, max_height), Image.LANCZOS)
 
-        PADDING = 20
         self.tk_image = ImageTk.PhotoImage(self.display_image)
 
         self.canvas.config(width=self.tk_image.width() + 2 * PADDING, height=self.tk_image.height() + 2 * PADDING)
@@ -314,8 +315,8 @@ class Cropper:
             self.status_label.config(text="❌ Aucune sélection à recadrer.")
             return
 
-        scale_x = self.original_image.width / self.display_image.width
-        scale_y = self.original_image.height / self.display_image.height
+        scale_x = self.original_image.width / (self.display_image.width + PADDING)
+        scale_y = self.original_image.height / (self.display_image.height + PADDING)
         x1, y1, x2, y2 = [int(v * s) for v, s in zip(self.crop_box, (scale_x, scale_y, scale_x, scale_y))]
 
         cropped = self.original_image.crop((x1, y1, x2, y2))
