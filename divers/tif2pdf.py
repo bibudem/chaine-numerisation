@@ -27,7 +27,7 @@ def sort_by_page_number(filenames):
     return sorted(filenames, key=extract_page)
 
 def tiff_images_to_pdf(folder, prefix, tiff_files, dpi=300):
-    output_pdf_path = os.path.join(folder, f"{prefix}.pdf")
+    output_pdf_path = os.path.join(os.path.dirname(folder), f"{prefix}.pdf")
     c = canvas.Canvas(output_pdf_path, pagesize=letter)
 
     width_inch, height_inch = letter[0] / 72.0, letter[1] / 72.0  # Lettre US: 8.5x11 pouces
